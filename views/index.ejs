@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Crpto Currency</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/css/bootstrap-formhelpers.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+ </head>
+  <body>
+    <h1>Crypto</h1>
+    <p>Welcome to crypto</p>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-5"> 
+            <button onclick="$('#currencies1').bfhcurrencies({currency: 'USD'})" class="btn btn-primary">
+              Load Currencies
+            </button>
+            <br><br>
+            <select id="currencies1" class="form-control"></select>
+        </div>
+        <div class="col-md-5">
+            <button onclick="$('#currencies2').bfhcurrencies({currency: 'USD'})" class="btn btn-primary">
+              Load Currencies
+            </button>
+            <br><br>
+            <select id="currencies2" class="form-control"></select>
+        </div>
+        <div class="col-md-2">
+          <button id="fetchdata" class="btn btn-outline-success">Fetch Data</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container secondcont">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="card" >
+            <div class="card-header" id="country">
+              Country Currency
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item" id="append">Bitcoin</li>
+              <li class="list-group-item" id="tosym">Country Symbol</li>
+              <li class="list-group-item" id="price">Price</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="card" >
+            <div class="card-header" id="country1">
+              Country Currency
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item" id="append1">Bitcoin</li>
+              <li class="list-group-item" id="tosym1">Country Symbol</li>
+              <li class="list-group-item" id="price1">Price</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-danger" id="diffpric" role="alert">
+      Here You Can See the Difference from Left Section Price-Right section Price
+    </div>
+    <script>
+       let valueSelected; 
+       let valueSelected1 
+      function setCountry(cc) {
+          $('#country-select').val(cc);
+         }
+      $('#currencies1').on('change', function (e) {
+    var optionSelected = $("option:selected", this);
+     valueSelected = this.value;
+      });
+    $('#currencies2').on('change', function (e) {
+    var optionSelected5 = $("option:selected", this);
+     valueSelected1 = this.value;
+    });
+      let fetchbtn = document.getElementById('fetchdata');
+      fetchbtn.addEventListener('click',buttonhandler)
+
+      function buttonhandler(){
+        let config = {
+      headers: {
+        Ashish: 'Enter Your API Key ',
+      }
+    }
+      var xmlhttp = new XMLHttpRequest();
+      var url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=${valueSelected},${valueSelected1}`;
+      console.log(url)
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          var myArr = JSON.parse(this.responseText);
+           var extract = myArr.DISPLAY.BTC;
+           var result = Object.keys(extract).map(function (key) { 
+            return {type: key, name: extract[key]};
+          }); 
+          //For First Country
+          var data = result[0]['name'];
+          var fromsy = data.FROMSYMBOL;
+          var tosym = data.TOSYMBOL;
+          var price = data.PRICE;
+           document.getElementById("country").innerHTML = `Country Currency Your Selected: ${valueSelected}`;
+           document.getElementById("append").innerHTML = `BitCoin Symbol: ${fromsy}`;
+           document.getElementById("tosym").innerHTML = `Country Symbol: ${tosym}`;
+           document.getElementById("price").innerHTML = `1 Bitcoin in ${valueSelected} Price: ${price}`;
+           //For Second Country
+          var data1 = result[1]['name'];
+          var fromsy1 = data1.FROMSYMBOL;
+          var tosym1 = data1.TOSYMBOL;
+          var price1 = data1.PRICE;
+           document.getElementById("country1").innerHTML = `Country Currency Your Selected: ${valueSelected1}`;
+           document.getElementById("append1").innerHTML = `BitCoin Symbol: ${fromsy1}`;
+           document.getElementById("tosym1").innerHTML = `Country Symbol: ${tosym1}`;
+           document.getElementById("price1").innerHTML = `1 Bitcoin in ${valueSelected1} Price: ${price1}`;
+        }
+      };
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+      }
+      </script>
+  </body>
+</html>
